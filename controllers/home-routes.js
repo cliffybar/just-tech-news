@@ -31,7 +31,10 @@ router.get('/', (req, res) => {
         .then(dbPostData => {
             const posts = dbPostData.map(post => post.get({ plain: true }));
 
-            res.render('homepage', { posts });
+            res.render('homepage', {
+                posts,
+                loggedIn: req.session.loggedIn
+            });
         })
         .catch(err => {
             console.log(err);
@@ -39,35 +42,7 @@ router.get('/', (req, res) => {
         });
 });
 
-router.get('/login', (req, res) => {
-    if (req.session.loggedIn) {
-        res.redirect('/');
-        return;
-    }
-
-    res.render('login');
-});
-
-router.get('/', (req, res) => {
-    console.log(req.session);
-
-    res.render('homepage', {
-        posts,
-        loggedIn: req.session.loggedIn
-    });
-});
-
-router.post('/logout', (req, res) => {
-    if (req.session.loggedIn) {
-        req.session.destroy(() => {
-            res.status(204).end();
-        });
-    }
-    else {
-        res.status(404).end();
-    }
-});
-
+// get single post
 router.get('/post/:id', (req, res) => {
     Post.findOne({
         where: {
@@ -101,10 +76,8 @@ router.get('/post/:id', (req, res) => {
                 return;
             }
 
-            // serialize the data
             const post = dbPostData.get({ plain: true });
 
-            // pass data to template
             res.render('single-post', {
                 post,
                 loggedIn: req.session.loggedIn
@@ -114,6 +87,15 @@ router.get('/post/:id', (req, res) => {
             console.log(err);
             res.status(500).json(err);
         });
+});
+
+router.get('/login', (req, res) => {
+    if (req.session.loggedIn) {
+        res.redirect('/');
+        return;
+    }
+
+    res.render('login');
 });
 
 module.exports = router;
