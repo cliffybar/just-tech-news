@@ -18,8 +18,11 @@
         <a href="/login">login</a>
       </nav>
       <nav>
-        <button id="logout" class="btn-no-style">logout</button>
+        {{#if loggedIn}}
+        <script src="/javascript/logout.js"></script>
+        {{/if}}
         <a href="/login">login</a>
+        {/if}}
       </nav>
     </header>
     <main>
